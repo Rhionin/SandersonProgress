@@ -2,12 +2,15 @@ package com.rawonion.www.sandersonprogress;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
 
-import com.rawonion.www.sandersonprogress.R;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -24,14 +27,7 @@ public class DisplayMessageActivity extends Activity {
 
         Intent intent = getIntent();
         String url = intent.getStringExtra(MobileProgressActivity.EXTRA_MESSAGE);
-        //TODO: Validate URL before making send button available
-        new GetHtmlTask().execute(url);
-
-//        TextView textView = new TextView(this);
-//        textView.setTextSize(40);
-//        textView.setText(html);
-//
-//        setContentView(textView);
+        new GetHtmlDocumentTask().execute(url);
     }
 
     @Override
@@ -46,4 +42,70 @@ public class DisplayMessageActivity extends Activity {
         return super.onOptionsItemSelected(item);
     }
 
+    private class GetHtmlDocumentTask extends AsyncTask<String, Void, Document> {
+
+        @Override
+        protected Document doInBackground(String... urls) {
+            Document doc = null;
+            try {
+                doc = Jsoup.connect(urls[0]).get();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return doc;
+        }
+
+        private String getHTML(String urlToRead) {
+            URL url;
+            HttpURLConnection conn;
+            BufferedReader rd;
+            String line;
+            String result = "";
+            try {
+                url = new URL(urlToRead);
+                conn = (HttpURLConnection) url.openConnection();
+                conn.setRequestMethod("GET");
+                rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+                while ((line = rd.readLine()) != null) {
+                    result += line;
+                }
+                rd.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return result;
+        }
+
+        @Override
+        protected void onPostExecute(Document doc) {
+            viewProgress(doc);
+        }
+
+    }
+
+    private void viewProgress(Document doc) {
+        Element progressTitles = doc.select("#pagewrap .progress-titles")
+                .first();
+
+        Elements bookTitles = progressTitles.select(".book-title");
+        Elements progressPercentages = progressTitles.select(".progress");
+
+        String text = "";
+        for(int i = 0; i < bookTitles.size(); i++) {
+            String title = bookTitles.get(i).text();
+            String progress = progressPercentages.get(i).text();
+
+            text += (title + ": " + progress + "\n");
+        }
+
+        System.out.println(text);
+        TextView textView = new TextView(this);
+        textView.setText(text);
+
+        setContentView(textView);
+    }
 }
