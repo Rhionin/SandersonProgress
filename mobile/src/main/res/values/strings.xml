@@ -6,6 +6,6 @@
     <string name="action_settings">Settings</string>
     <string name="button_send">Send</string>
     <string name="title_activity_display_message">Display Message Activity</string>
-    <string name="hello_world">Hello world!</string>
+    <string name="title_activity_progress_bars">Progress Bars Activity</string>
 
 </resources>
