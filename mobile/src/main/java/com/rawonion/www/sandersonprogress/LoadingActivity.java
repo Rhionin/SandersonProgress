@@ -78,10 +78,10 @@ public class LoadingActivity extends Activity {
 
         String text = ""; //TODO: Remove
         String[] titles = new String[bookTitles.size()];
-        String[] progresses = new String[progressPercentages.size()];
+        int[] progresses = new int[progressPercentages.size()];
         for(int i = 0; i < bookTitles.size(); i++) {
             String title = bookTitles.get(i).text();
-            String progress = progressPercentages.get(i).text();
+            int progress = Integer.parseInt(progressPercentages.get(i).text().split(" ")[0]);
 
             titles[i] = title;
             progresses[i] = progress;

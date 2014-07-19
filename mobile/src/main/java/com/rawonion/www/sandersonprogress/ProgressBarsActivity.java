@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 public class ProgressBarsActivity extends Activity {
@@ -16,17 +18,19 @@ public class ProgressBarsActivity extends Activity {
 
         Intent intent = getIntent();
         String[] titles = intent.getStringArrayExtra(LoadingActivity.EXTRA_TITLES);
-        String[] progresses = intent.getStringArrayExtra(LoadingActivity.EXTRA_PROGRESSES);
+        int[] progresses = intent.getIntArrayExtra(LoadingActivity.EXTRA_PROGRESSES);
 
-        String text = "";
-        for(int i = 0; i < titles.length; i++) {
-            text += (titles[i] + ":- " + progresses[i] + "\n");
+        LinearLayout layout = (LinearLayout) findViewById(R.id.progressBarLayout);
+        for (int i = 0; i < titles.length; i++)
+        {
+            TextView tv = new TextView(this);
+            tv.setText(titles[i]);
+            layout.addView(tv);
+
+            ProgressBar pb = new ProgressBar(this, null, android.R.attr.progressBarStyleHorizontal);
+            pb.setProgress(progresses[i]);
+            layout.addView(pb);
         }
-
-        TextView textView = new TextView(this);
-        textView.setText(text);
-
-        setContentView(textView);
     }
 
 
