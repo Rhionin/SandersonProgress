@@ -1,7 +1,7 @@
 package com.rawonion.www.sandersonprogress;
 
 import android.app.Activity;
-import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -9,28 +9,20 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
+
+import java.io.IOException;
+
 public class ProgressBarsActivity extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_progress_bars);
-
-        Intent intent = getIntent();
-        String[] titles = intent.getStringArrayExtra(LoadingActivity.EXTRA_TITLES);
-        int[] progresses = intent.getIntArrayExtra(LoadingActivity.EXTRA_PROGRESSES);
-
-        LinearLayout layout = (LinearLayout) findViewById(R.id.progressBarLayout);
-        for (int i = 0; i < titles.length; i++)
-        {
-            TextView tv = new TextView(this);
-            tv.setText(titles[i]);
-            layout.addView(tv);
-
-            ProgressBar pb = new ProgressBar(this, null, android.R.attr.progressBarStyleHorizontal);
-            pb.setProgress(progresses[i]);
-            layout.addView(pb);
-        }
+        new getLatestProgressTask().execute("http://brandonsanderson.com");
     }
 
 
@@ -51,5 +43,71 @@ public class ProgressBarsActivity extends Activity {
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private class getLatestProgressTask extends AsyncTask<String, Void, Document> {
+
+        @Override
+        protected Document doInBackground(String... urls) {
+            Document doc = getHtmlDocument(urls[0]);
+            System.out.println("got doc");
+            return doc;
+        }
+
+        @Override
+        protected void onPostExecute(Document doc) {
+            viewProgress(doc);
+        }
+
+    }
+
+    private Document getHtmlDocument(String url) {
+        Document doc = null;
+        try {
+            doc = Jsoup.connect(url).get();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return doc;
+    }
+
+    private void viewProgress(Document doc) {
+        WorkInProgress[] worksInProgress = getWorksInProgress(doc);
+
+        LinearLayout layout = (LinearLayout) findViewById(R.id.progressBarLayout);
+        for (int i = 0; i < worksInProgress.length; i++)
+        {
+            WorkInProgress wip = worksInProgress[i];
+            String title = wip.getTitle();
+            int progress = wip.getProgress();
+
+            TextView tv = new TextView(this);
+            tv.setText(title);
+            layout.addView(tv);
+
+            ProgressBar pb = new ProgressBar(this, null, android.R.attr.progressBarStyleHorizontal);
+            pb.setProgress(progress);
+            layout.addView(pb);
+        }
+    }
+
+    private WorkInProgress[] getWorksInProgress(Document doc) {
+        Element progressTitles = doc.select("#pagewrap .progress-titles")
+                .first();
+
+        Elements bookTitles = progressTitles.select(".book-title");
+        Elements progressPercentages = progressTitles.select(".progress");
+
+        WorkInProgress[] worksInProgress = new WorkInProgress[bookTitles.size()];
+        for(int i = 0; i < bookTitles.size(); i++) {
+            String title = bookTitles.get(i).text();
+            int progress = Integer.parseInt(progressPercentages.get(i).text().split(" ")[0]);
+
+            worksInProgress[i] = new WorkInProgress(title, progress);
+        }
+
+        return worksInProgress;
     }
 }
