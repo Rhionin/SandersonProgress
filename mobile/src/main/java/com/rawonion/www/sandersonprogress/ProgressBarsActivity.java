@@ -22,9 +22,8 @@ public class ProgressBarsActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_progress_bars);
-        new getLatestProgressTask().execute("http://brandonsanderson.com");
+        new getLatestProgressTask().execute();
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -49,8 +48,7 @@ public class ProgressBarsActivity extends Activity {
 
         @Override
         protected Document doInBackground(String... urls) {
-            Document doc = getHtmlDocument(urls[0]);
-            System.out.println("got doc");
+            Document doc = getHtmlDocument("http://brandonsanderson.com");
             return doc;
         }
 
