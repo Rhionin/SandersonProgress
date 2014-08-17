@@ -44,17 +44,19 @@ public class ProgressBarsActivity extends Activity {
         return super.onOptionsItemSelected(item);
     }
 
-    private class getLatestProgressTask extends AsyncTask<String, Void, Document> {
+    private class getLatestProgressTask extends AsyncTask<String, Void, WorkInProgress[]> {
 
         @Override
-        protected Document doInBackground(String... urls) {
-            Document doc = getHtmlDocument("http://brandonsanderson.com");
-            return doc;
+        protected WorkInProgress[] doInBackground(String... urls) {
+//            Document doc = getHtmlDocument("http://brandonsanderson.com");
+//            WorkInProgress[] worksInProgress = getWorksInProgress(doc);
+            WorkInProgress[] worksInProgress = getMockWorksInProgress();
+            return worksInProgress;
         }
 
         @Override
-        protected void onPostExecute(Document doc) {
-            viewProgress(doc);
+        protected void onPostExecute(WorkInProgress[] worksInProgress) {
+            viewProgress(worksInProgress);
         }
 
     }
@@ -71,9 +73,7 @@ public class ProgressBarsActivity extends Activity {
         return doc;
     }
 
-    private void viewProgress(Document doc) {
-        WorkInProgress[] worksInProgress = getWorksInProgress(doc);
-
+    private void viewProgress(WorkInProgress[] worksInProgress) {
         LinearLayout layout = (LinearLayout) findViewById(R.id.progressBarLayout);
         for (int i = 0; i < worksInProgress.length; i++)
         {
@@ -106,6 +106,18 @@ public class ProgressBarsActivity extends Activity {
             worksInProgress[i] = new WorkInProgress(title, progress);
         }
 
+        return worksInProgress;
+    }
+
+    private WorkInProgress[] getMockWorksInProgress() {
+        int bookCt = 4;
+        WorkInProgress[] worksInProgress = new WorkInProgress[bookCt];
+        for(int i = 0; i < bookCt; i++) {
+            String title = String.format("Book %d", i);
+            int progress = i * 10;
+
+            worksInProgress[i] = new WorkInProgress(title, progress);
+        }
         return worksInProgress;
     }
 }
