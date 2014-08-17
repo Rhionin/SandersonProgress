@@ -22,7 +22,7 @@ public class ProgressBarsActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_progress_bars);
-        new getLatestProgressTask().execute();
+        getLatestProgress();
     }
 
     @Override
@@ -38,10 +38,17 @@ public class ProgressBarsActivity extends Activity {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-        if (id == R.id.action_settings) {
-            return true;
+        switch (id) {
+            case R.id.action_refresh:
+                getLatestProgress();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
-        return super.onOptionsItemSelected(item);
+    }
+
+    private void getLatestProgress() {
+        new getLatestProgressTask().execute();
     }
 
     private class getLatestProgressTask extends AsyncTask<String, Void, WorkInProgress[]> {
@@ -75,6 +82,8 @@ public class ProgressBarsActivity extends Activity {
 
     private void viewProgress(WorkInProgress[] worksInProgress) {
         LinearLayout layout = (LinearLayout) findViewById(R.id.progressBarLayout);
+        layout.removeAllViews();
+
         for (int i = 0; i < worksInProgress.length; i++)
         {
             WorkInProgress wip = worksInProgress[i];
@@ -109,15 +118,18 @@ public class ProgressBarsActivity extends Activity {
         return worksInProgress;
     }
 
+    private int mockModifier = 0;
     private WorkInProgress[] getMockWorksInProgress() {
         int bookCt = 4;
         WorkInProgress[] worksInProgress = new WorkInProgress[bookCt];
         for(int i = 0; i < bookCt; i++) {
             String title = String.format("Book %d", i);
-            int progress = i * 10;
+            int progress = (i + mockModifier) * 10;
 
             worksInProgress[i] = new WorkInProgress(title, progress);
         }
+
+        mockModifier++;
         return worksInProgress;
     }
 }
