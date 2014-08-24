@@ -3,6 +3,7 @@ package com.rawonion.www.sandersonprogress;
 import android.app.Activity;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.LinearLayout;
@@ -16,12 +17,21 @@ import org.jsoup.select.Elements;
 
 import java.io.IOException;
 
-public class ProgressBarsActivity extends Activity {
+public class ProgressBarsActivity extends Activity implements SwipeRefreshLayout.OnRefreshListener {
+
+    private SwipeRefreshLayout mSwipeRefreshLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_progress_bars);
+
+        // /You will setup the action bar with pull to refresh layout
+        mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.container);
+        mSwipeRefreshLayout.setColorScheme(R.color.blue,
+                R.color.green, R.color.orange, R.color.purple);
+        mSwipeRefreshLayout.setOnRefreshListener(this);
+
         getLatestProgress();
     }
 
@@ -45,6 +55,11 @@ public class ProgressBarsActivity extends Activity {
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    @Override
+    public void onRefresh() {
+        getLatestProgress();
     }
 
     private void getLatestProgress() {
@@ -98,6 +113,8 @@ public class ProgressBarsActivity extends Activity {
             pb.setProgress(progress);
             layout.addView(pb);
         }
+
+        mSwipeRefreshLayout.setRefreshing(false);
     }
 
     private WorkInProgress[] getWorksInProgress(Document doc) {
