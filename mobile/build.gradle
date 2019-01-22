@@ -1,27 +1,24 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 20
-    buildToolsVersion "20.0.0"
+    compileSdkVersion 28
 
     defaultConfig {
         applicationId "com.rawonion.www.sandersonprogress"
-        minSdkVersion 14
-        targetSdkVersion 20
+        minSdkVersion 20
+        targetSdkVersion 28
         versionCode 1
         versionName "1.0"
     }
     buildTypes {
         release {
-            runProguard false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+//            runProguard false
+//            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
 }
 
 dependencies {
-    compile fileTree(include: ['*.jar'], dir: 'libs')
-    wearApp project(':wear')
-    compile 'com.google.android.gms:play-services-wearable:+'
-    compile files('libs/jsoup-1.7.3.jar')
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation files('libs/jsoup-1.7.3.jar')
 }
