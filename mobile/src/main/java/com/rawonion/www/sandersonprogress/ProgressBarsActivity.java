@@ -70,9 +70,9 @@ public class ProgressBarsActivity extends Activity implements SwipeRefreshLayout
 
         @Override
         protected WorkInProgress[] doInBackground(String... urls) {
-//            Document doc = getHtmlDocument("http://brandonsanderson.com");
-//            WorkInProgress[] worksInProgress = getWorksInProgress(doc);
-            WorkInProgress[] worksInProgress = getMockWorksInProgress();
+            Document doc = getHtmlDocument("https://brandonsanderson.com");
+            WorkInProgress[] worksInProgress = getWorksInProgress(doc);
+//            WorkInProgress[] worksInProgress = getMockWorksInProgress();
             return worksInProgress;
         }
 
